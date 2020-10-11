@@ -125,7 +125,7 @@
       const progressText = document.querySelector('.progress-text');
       function updateProgress(numerator, denominator) {
         progress.style.width = `${numerator / denominator * 100}%`;
-        if (numerator === demoninator) {
+        if (numerator === denominator) {
           progressText.textContent = "Downloading complete, loading..."
         }
       }
