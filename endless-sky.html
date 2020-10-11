@@ -1,0 +1,164 @@
+<!doctype HTML>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <title>Endless Sky</title>
+    <style>
+      html {
+          width: 100%;
+          height: 100%;
+      }
+      body {
+          display: -webkit-flex;
+          display: flex;
+          -webkit-flex-direction: column;
+          flex-direction: column;
+          width: 100%;
+          height: 100%;
+          font-family: sans-serif;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+      }
+      #canvas {
+          -webkit-flex: 1;
+          flex: 1;
+          width: 100%;
+          min-height: 10%;
+      }
+      .status {
+          background-color: hsl(60,20%,90%);
+          text-align: center;
+          height: 0;
+      }
+      #output {
+          background-color: hsla(240,10%,10%,0.0);
+          color: black;
+          border: none;
+          padding: 0 1em;
+          width: 50%;
+      }
+      .loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-color: black;
+        background-image: url("./title.webp");
+        background-repeat: no-repeat;
+        background-position: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .progress-bar-section {
+        margin-top: 40%;
+        font-family: "Lucida Console", Monaco, monospace;
+        color: #4e4e4e;
+        text-align: center;
+
+      }
+      .progress-bar {
+        width: 400px;
+        height: 20px;
+        background-color: #dddddd;
+      }
+      .progress {
+        height: 100%;
+        width: 1%;
+        transition: width .2s;
+        background-color: #6e6e6e;
+      }
+      .loading-progress {
+      }
+      .debug {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 70%;
+        background-color: lightgreen;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        resize: horizontal;
+        overflow: auto;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading">
+      <div class="progress-bar-section">
+        <p class="progress-text">Downloading data...</p>
+        <div class="progress-bar">
+          <div class="progress"></div>
+        </div>
+      </div>
+    </div>
+    <div class="debug">
+      <h1>Debug panel</h1>
+      <p> press backslash to disable </p>
+      <div class="status">Downloading...</div>
+      <textarea id="output" rows="8"></textarea>
+    </div>
+
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    
+    <script type='text/javascript'>
+      window.addEventListener('keydown', (e) => {
+        if (e.code === 'Backslash') {
+          e.preventDefault();
+          const debug = document.querySelector('.debug');
+          if (debug.style.display === 'none') {
+            debug.style.display = 'initial';
+          } else {
+            debug.style.display = 'none'
+          }
+        }
+      }, {capture: true})
+      const progressBar = document.querySelector('.progressBar');
+      const progress = document.querySelector('.progress');
+      const progressText = document.querySelector('.progress-text');
+      function updateProgress(numerator, denominator) {
+        progress.style.width = `${numerator / denominator * 100}%`;
+        if (true || numerator === demoninator) {
+          progressText.textContent = "Downloading images and sounds..."
+        }
+      }
+      window.updateProgress = updateProgress;
+      var Module = {
+          print: (function(text) {
+              var element = document.getElementById('output');
+              if (element) element.value = ''; // clear browser cache
+              return function(text) {
+                  if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                  console.log(text);
+                  if (element) {
+                      element.value += text + "\n";
+                      element.scrollTop = element.scrollHeight; // focus on bottom
+                  }
+              };
+          })(),
+          printErr: function(text) { console.error(text); },
+          setStatus: (function() {
+              const element = document.querySelector('.status');
+              if (element) element.textContent = ''; // clear browser cache
+              const fractionRe = /([0-9]+)\/([0-9]+)/
+              return function setStatus(text) {
+                element.textContent = text;
+                const match = fractionRe.exec(text)
+                if (match) updateProgress(parseInt(match[1]), parseInt(match[2]));
+              };
+          })(),
+          canvas: document.getElementById('canvas'),
+      };
+    </script>
+    <script async type="text/javascript" src="endless-sky.js"></script>
+  </body>
+</html>
+
+
